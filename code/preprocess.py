@@ -1,8 +1,12 @@
 import pandas as pd
 import numpy as np
+import os
+
+RUN_DIAGNOSTICS = True
 
 DATA_DIR = r"C:\Users\Maksi\PycharmProjects\DATA_MINING_CMS_PROJECT\data"
 RAW_PATH = DATA_DIR + r"\raw_data.csv"
+RAW_CACHE_PATH = DATA_DIR + r"\raw_data_cache.parquet"
 
 USECOLS = [
     "Record_ID",
@@ -35,18 +39,26 @@ DTYPES = {
     "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1": "string",
 }
 
-df = pd.read_csv(
-    RAW_PATH,
-    usecols=USECOLS,
-    dtype=DTYPES,
-    parse_dates=["Date_of_Payment"],
-    low_memory=False,
-)
-print(f"Loaded {len(df):,} rows")
+if os.path.exists(RAW_CACHE_PATH):
+    df = pd.read_parquet(RAW_CACHE_PATH)
+    print(f"Loaded {len(df):,} rows from cache")
+else:
+    df = pd.read_csv(
+        RAW_PATH,
+        usecols=USECOLS,
+        dtype=DTYPES,
+        parse_dates=["Date_of_Payment"],
+        low_memory=False,
+    )
+    df.to_parquet(RAW_CACHE_PATH, index=False)
+    print(f"Loaded {len(df):,} rows from CSV and cached to parquet")
+
+if RUN_DIAGNOSTICS:
+    print(df["Covered_Recipient_Type"].value_counts())
+    print(df["Covered_Recipient_Type"].value_counts(normalize=True) * 100)
+    print("NaNs:\n", df.isna().sum())
 
 # Missing values
-print(df.isna().sum())
-
 # If company name or amount is missing there's not much we can analyze
 df = df.dropna(subset=[
     "Total_Amount_of_Payment_USDollars",
@@ -54,11 +66,37 @@ df = df.dropna(subset=[
 ])
 df["Covered_Recipient_Specialty_1"] = df["Covered_Recipient_Specialty_1"].fillna("Unknown")
 
-# Duplicates
+# Specialty strings are a pipe-delimited taxonomy hierarchy, but the specialty-like
+# label sits at a different depth depending on recipient type:
+#   - Physicians: always the 2nd segment (deliberately drops a 3rd sub-specialty
+#     segment when present, e.g. "Anesthesiology|Pain Medicine" -> "Anesthesiology")
+#   - Everyone else (NPs, PAs, dentists, podiatrists, chiropractors, teaching hospitals):
+#     the LAST segment, not a fixed index -- confirmed via crosstab that ~48% of
+#     non-physician rows have only 2 segments (2nd segment = profession, e.g.
+#     "Dentist") while the rest have 3 (3rd segment = the actual specialty label).
+#     Using the last segment adapts to either case; "Unknown" (1 segment) returns
+#     itself, which also correctly handles teaching hospitals with no fallback needed.
+raw_specialty = df["Covered_Recipient_Specialty_1"]
+specialty_parts = raw_specialty.str.split("|")
+is_physician = df["Covered_Recipient_Type"] == "Covered Recipient Physician"
 
+if RUN_DIAGNOSTICS:
+    segment_counts = specialty_parts.str.len()
+    print(pd.crosstab(df["Covered_Recipient_Type"], segment_counts))
+
+segment_2 = specialty_parts.str[1]
+segment_last = specialty_parts.str[-1]
+
+extracted = np.where(is_physician, segment_2, segment_last)
+df["Covered_Recipient_Specialty_1"] = pd.Series(extracted, index=df.index).fillna(raw_specialty)
+
+
+# Duplicates
 before = len(df)
 df = df.drop_duplicates()
-print(f"Dropped {before - len(df):,} duplicate rows")
+
+if RUN_DIAGNOSTICS:
+    print(f"Dropped {before - len(df):,} duplicate rows")
 
 # Log-transform
 df["Log_Amount"] = np.log1p(df["Total_Amount_of_Payment_USDollars"])
@@ -82,6 +120,8 @@ company_physician = (
 )
 
 # This is really just a specialty aggregated table, since year is constant in this dataset (2024).
+# Since teaching hospitals don't have a specialty, they are the "Unknown" final row in the dataset.
+# Their number of payments, 37388, matches the number of rows that are Teaching Hospitals in the raw dataset.
 specialty_year = (
     df.groupby("Covered_Recipient_Specialty_1", observed=True)
       .agg(total_amount=("Total_Amount_of_Payment_USDollars", "sum"),
@@ -89,9 +129,10 @@ specialty_year = (
       .reset_index()
 )
 
-print(f"company_specialty: {len(company_specialty):,} rows")
-print(f"company_physician: {len(company_physician):,} rows")
-print(f"specialty_year: {len(specialty_year):,} rows")
+if RUN_DIAGNOSTICS:
+    print(f"company_specialty: {len(company_specialty):,} rows")
+    print(f"company_physician: {len(company_physician):,} rows")
+    print(f"specialty_year: {len(specialty_year):,} rows")
 
 # Parquet keeps dtypes instead of python re-infering them every read. Useful on this scale
 df.to_parquet(DATA_DIR + r"\general_payments_2024_clean.parquet", index=False)
