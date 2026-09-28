@@ -64,18 +64,9 @@ df = df.dropna(subset=[
     "Total_Amount_of_Payment_USDollars",
     "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name",
 ])
-df["Covered_Recipient_Specialty_1"] = df["Covered_Recipient_Specialty_1"].fillna("Unknown")
+# As per the previous report there is a 1:1 match between nans in specialty and amount of teaching hospitals
+df["Covered_Recipient_Specialty_1"] = df["Covered_Recipient_Specialty_1"].fillna("Teaching Hospital")
 
-# Specialty strings are a pipe-delimited taxonomy hierarchy, but the specialty-like
-# label sits at a different depth depending on recipient type:
-#   - Physicians: always the 2nd segment (deliberately drops a 3rd sub-specialty
-#     segment when present, e.g. "Anesthesiology|Pain Medicine" -> "Anesthesiology")
-#   - Everyone else (NPs, PAs, dentists, podiatrists, chiropractors, teaching hospitals):
-#     the LAST segment, not a fixed index -- confirmed via crosstab that ~48% of
-#     non-physician rows have only 2 segments (2nd segment = profession, e.g.
-#     "Dentist") while the rest have 3 (3rd segment = the actual specialty label).
-#     Using the last segment adapts to either case; "Unknown" (1 segment) returns
-#     itself, which also correctly handles teaching hospitals with no fallback needed.
 raw_specialty = df["Covered_Recipient_Specialty_1"]
 specialty_parts = raw_specialty.str.split("|")
 is_physician = df["Covered_Recipient_Type"] == "Covered Recipient Physician"
@@ -134,7 +125,7 @@ if RUN_DIAGNOSTICS:
     print(f"company_physician: {len(company_physician):,} rows")
     print(f"specialty_year: {len(specialty_year):,} rows")
 
-# Parquet keeps dtypes instead of python re-infering them every read. Useful on this scale
+# Use parquet for cleaned data because it's faster for large files, keeps dtypes
 df.to_parquet(DATA_DIR + r"\general_payments_2024_clean.parquet", index=False)
 company_specialty.to_csv(DATA_DIR + r"\company_specialty.csv", index=False)
 company_physician.to_csv(DATA_DIR + r"\company_physician.csv", index=False)
