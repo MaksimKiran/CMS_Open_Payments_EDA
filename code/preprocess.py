@@ -111,8 +111,6 @@ company_physician = (
 )
 
 # This is really just a specialty aggregated table, since year is constant in this dataset (2024).
-# Since teaching hospitals don't have a specialty, they are the "Unknown" final row in the dataset.
-# Their number of payments, 37388, matches the number of rows that are Teaching Hospitals in the raw dataset.
 specialty_year = (
     df.groupby("Covered_Recipient_Specialty_1", observed=True)
       .agg(total_amount=("Total_Amount_of_Payment_USDollars", "sum"),
