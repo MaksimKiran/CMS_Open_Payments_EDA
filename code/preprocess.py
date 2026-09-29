@@ -89,6 +89,54 @@ df = df.drop_duplicates()
 if RUN_DIAGNOSTICS:
     print(f"Dropped {before - len(df):,} duplicate rows")
 
+# Company name standardization check
+if RUN_DIAGNOSTICS:
+    company_names = df["Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name"]
+
+    normalized_names = (
+        company_names
+        .str.upper()
+        .str.replace(r"[^A-Z0-9]", "", regex=True)
+    )
+
+    name_variants = pd.DataFrame({
+        "original": company_names,
+        "normalized": normalized_names
+    }).drop_duplicates()
+
+    suspicious = (
+        name_variants.groupby("normalized")["original"]
+        .agg(list)
+    )
+
+    suspicious = suspicious[suspicious.str.len() > 1]
+
+    print(f"Potential company-name variants: {len(suspicious):,}")
+    for variants in suspicious.head(20):
+        print(variants)
+
+# Standardize company names
+company_names = df["Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name"]
+
+normalized_names = (
+    company_names
+    .str.casefold()
+    .str.replace(r"[^a-z0-9]", "", regex=True)
+)
+
+canonical_names = (
+    pd.DataFrame({
+        "normalized": normalized_names,
+        "original": company_names
+    })
+    .groupby("normalized")["original"]
+    .agg(lambda x: x.mode().iloc[0])
+)
+
+df["Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name"] = (
+    normalized_names.map(canonical_names)
+)
+
 # Log-transform
 df["Log_Amount"] = np.log1p(df["Total_Amount_of_Payment_USDollars"])
 
