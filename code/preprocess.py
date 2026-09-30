@@ -12,6 +12,7 @@ USECOLS = [
     "Record_ID",
     "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name",
     "Covered_Recipient_Profile_ID",
+    "Teaching_Hospital_ID",
     "Covered_Recipient_Type",
     "Recipient_State",
     "Covered_Recipient_Specialty_1",
@@ -28,6 +29,7 @@ DTYPES = {
     "Record_ID" : "string",
     "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name": "string",
     "Covered_Recipient_Profile_ID": "string",
+    "Teaching_Hospital_ID" : "string",
     "Covered_Recipient_Type": "category",
     "Recipient_State": "category",
     "Covered_Recipient_Specialty_1": "string",
@@ -66,6 +68,14 @@ df = df.dropna(subset=[
 ])
 # As per the previous report there is a 1:1 match between nans in specialty and amount of teaching hospitals
 df["Covered_Recipient_Specialty_1"] = df["Covered_Recipient_Specialty_1"].fillna("Teaching Hospital")
+
+th_mask = df["Covered_Recipient_Type"].str.contains("Teaching")
+df.loc[th_mask, "Covered_Recipient_Profile_ID"] = "TH_" + df.loc[th_mask, "Teaching_Hospital_ID"]
+df = df.drop(columns=["Teaching_Hospital_ID"])
+
+if RUN_DIAGNOSTICS:
+    print("Here! Recipient ID's nan check.")
+    print(df["Covered_Recipient_Profile_ID"].isna().sum())
 
 raw_specialty = df["Covered_Recipient_Specialty_1"]
 specialty_parts = raw_specialty.str.split("|")
@@ -145,7 +155,8 @@ company_specialty = (
     df.groupby(["Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name",
                 "Covered_Recipient_Specialty_1"], observed=True)
       .agg(total_amount=("Total_Amount_of_Payment_USDollars", "sum"),
-           n_payments=("Total_Amount_of_Payment_USDollars", "count"),
+           n_payments=("Number_of_Payments_Included_in_Total_Amount", "sum"),
+           n_recipients=("Covered_Recipient_Profile_ID", "nunique"),
            mean_amount=("Total_Amount_of_Payment_USDollars", "mean"))
       .reset_index()
 )
@@ -154,7 +165,7 @@ company_physician = (
     df.groupby(["Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name",
                 "Covered_Recipient_Profile_ID"], observed=True)
       .agg(total_amount=("Total_Amount_of_Payment_USDollars", "sum"),
-           n_payments=("Total_Amount_of_Payment_USDollars", "count"))
+           n_payments=("Number_of_Payments_Included_in_Total_Amount", "sum"))
       .reset_index()
 )
 
@@ -162,7 +173,7 @@ company_physician = (
 specialty_year = (
     df.groupby("Covered_Recipient_Specialty_1", observed=True)
       .agg(total_amount=("Total_Amount_of_Payment_USDollars", "sum"),
-           n_payments=("Total_Amount_of_Payment_USDollars", "count"))
+           n_payments=("Number_of_Payments_Included_in_Total_Amount", "sum"))
       .reset_index()
 )
 
