@@ -156,9 +156,11 @@ company_specialty = (
                 "Covered_Recipient_Specialty_1"], observed=True)
       .agg(total_amount=("Total_Amount_of_Payment_USDollars", "sum"),
            n_payments=("Number_of_Payments_Included_in_Total_Amount", "sum"),
-           n_recipients=("Covered_Recipient_Profile_ID", "nunique"),
-           mean_amount=("Total_Amount_of_Payment_USDollars", "mean"))
+           n_recipients=("Covered_Recipient_Profile_ID", "nunique"))
       .reset_index()
+)
+company_specialty["mean_amount"] = (
+    company_specialty["total_amount"] / company_specialty["n_payments"]
 )
 
 company_physician = (
