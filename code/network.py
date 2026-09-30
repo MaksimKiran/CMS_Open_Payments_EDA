@@ -6,23 +6,12 @@ import matplotlib.pyplot as plt
 
 RUN_DIAGNOSTICS = True
 
-PROJECT_DIR = r"C:\Users\Maksi\PycharmProjects\DATA_MINING_CMS_PROJECT"
-DATA_DIR = os.path.join(PROJECT_DIR, "data")
-VIS_DIR = os.path.join(PROJECT_DIR, "visualizations")
-OUT_DIR = os.path.join(DATA_DIR, "network")
-os.makedirs(VIS_DIR, exist_ok=True)
-os.makedirs(OUT_DIR, exist_ok=True)
-
-COMPANY = "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name"
-SPECIALTY = "Covered_Recipient_Specialty_1"
-
-TOP_N = 15
-MIN_RECIPIENTS = 5
-
 pd.set_option("display.width", 200)
 pd.set_option("display.max_columns", 20)
 pd.set_option("display.max_colwidth", 60)
 
+TOP_N = 15
+MIN_RECIPIENTS = 5
 
 # Shorten company names if necessary
 def short(s, n=25):
@@ -34,6 +23,15 @@ def style(node_list):
     return ([colors(community_of[n] % 20) for n in node_list],
             [30 + 800 * strength[n] / biggest for n in node_list])
 
+PROJECT_DIR = r"C:\Users\Maksi\PycharmProjects\DATA_MINING_CMS_PROJECT"
+DATA_DIR = os.path.join(PROJECT_DIR, "data")
+VIS_DIR = os.path.join(PROJECT_DIR, "visualizations")
+OUT_DIR = os.path.join(DATA_DIR, "network")
+os.makedirs(VIS_DIR, exist_ok=True)
+os.makedirs(OUT_DIR, exist_ok=True)
+
+COMPANY = "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name"
+SPECIALTY = "Covered_Recipient_Specialty_1"
 
 cs = pd.read_csv(os.path.join(DATA_DIR, "company_specialty.csv"), keep_default_na=False)
 cs = cs[cs["total_amount"] > 0].copy()  # we are interested in positive payment relationships
@@ -57,9 +55,9 @@ for _, row in cs.iterrows():
                log_weight=row["log_weight"])
 
 # assert nx.is_bipartite(G)
-if RUN_DIAGNOSTICS:
-    print(f"Nodes: {G.number_of_nodes():,} ({len(company_nodes):,} companies, {len(specialty_nodes):,} specialties)")
-    print(f"Edges: {G.number_of_edges():,}")
+
+print(f"Nodes: {G.number_of_nodes():,} ({len(company_nodes):,} companies, {len(specialty_nodes):,} specialties)")
+print(f"Edges: {G.number_of_edges():,}")
 
 # Degree, weighted degree, centrality
 nodes = pd.DataFrame({"node": list(G.nodes)})
@@ -76,7 +74,10 @@ nodes["degree_centrality"] = nodes["node"].map(nx.bipartite.degree_centrality(G,
 
 # Communities Louvain
 communities = nx.community.louvain_communities(G, weight="log_weight", resolution=1.0, seed=42)
-community_of = {n: cid for cid, members in enumerate(communities) for n in members}
+community_of = {}
+for cid, members in enumerate(communities):
+    for i in members:
+        community_of[i] = cid
 nodes["community"] = nodes["node"].map(community_of)
 modularity = nx.community.modularity(G, communities, weight="log_weight")
 print(f"Louvain found {len(communities)} communities (modularity {modularity:.3f})")
@@ -170,3 +171,79 @@ plt.savefig(os.path.join(VIS_DIR, "network_core_graph.png"), dpi=150)
 plt.close()
 
 print("\nSaved tables to", OUT_DIR, "and figures to", VIS_DIR)
+
+# Chosen from helper script, good ration between total amount and payments
+FOCUS_SPECIALTY = "Independent Medical Examiner"
+PHYSICIAN = "Covered_Recipient_Profile_ID"
+
+df = pd.read_parquet(DATA_DIR + r"\general_payments_2024_clean.parquet")
+focus = df[df[SPECIALTY] == FOCUS_SPECIALTY]
+
+cp = (
+    focus.groupby([COMPANY, PHYSICIAN], observed=True)
+    .agg(total_amount=("Total_Amount_of_Payment_USDollars", "sum"),
+         n_payments=("Number_of_Payments_Included_in_Total_Amount", "sum"))
+    .reset_index()
+)
+cp["log_weight"] = np.log1p(cp["total_amount"])
+
+G2 = nx.Graph()
+company_nodes2 = list(cp[COMPANY].unique())
+physician_nodes = list(cp[PHYSICIAN].unique())
+G2.add_nodes_from(company_nodes2, bipartite=0, kind="company")
+G2.add_nodes_from(physician_nodes, bipartite=1, kind="physician")
+
+for _, row in cp.iterrows():
+    G2.add_edge(row[COMPANY], row[PHYSICIAN],
+                total_amount = row["total_amount"],
+                n_payments = row["n_payments"],
+                log_weight=row["log_weight"])
+
+
+print(f"Number of nodes: {G2.number_of_nodes()}, {len(company_nodes2)} companies and {len(physician_nodes)} physicians.")
+print(f"Number of edges: {G2.number_of_edges()}")
+
+nodes2 = pd.DataFrame({"node" : list(G2.nodes)})
+nodes2["kind"] = nodes2["node"].map(lambda n: G2.nodes[n]["kind"])
+nodes2["degree"] = nodes2["node"].map(dict(G2.degree()))
+nodes2["weighted_degree"] = nodes2["node"].map(dict(G2.degree(weight="log_weight")))
+nodes2["degree_centrality"] = nodes2["node"].map(nx.bipartite.degree_centrality(G2, company_nodes2))
+
+communities2 = nx.community.louvain_communities(G2, weight="log_weight", seed=42)
+community_of2 = {}
+for cid, members in enumerate(communities2):
+    for i in members:
+        community_of2[i] = cid
+nodes2["community"] = nodes2["node"].map(community_of2)
+
+print(f"{FOCUS_SPECIALTY}: Louvain found {len(communities2)} communities")
+print(nodes2.sort_values("weighted_degree", ascending=False).to_string(index=False))
+
+company_order = nodes2[nodes2["kind"] == "company"].sort_values("weighted_degree", ascending=False)["node"].tolist()
+physician_order = nodes2[nodes2["kind"] == "physician"].sort_values("weighted_degree", ascending=False)["node"].tolist()
+
+pos2 = nx.bipartite_layout(G2, company_order, align="vertical")
+colors2 = plt.get_cmap("tab20")
+
+fig, ax = plt.subplots(figsize=(10, 14))
+nx.draw_networkx_edges(G2, pos2, ax=ax, alpha=0.3)
+
+for node_list, shape in [(company_order, "o"), (physician_order, "s")]:
+    c = [colors2(community_of2[n] % 20) for n in node_list]
+    nx.draw_networkx_nodes(G2, pos2, nodelist=node_list, node_color=c, node_shape=shape,
+                            edgecolors="k", linewidths=0.4, node_size=300, ax=ax)
+
+# Only label companies, physician IDs are meaningless numbers and would just clutter this
+company_labels = {n: n for n in company_order}
+nx.draw_networkx_labels(G2, pos2, labels=company_labels, font_size=8, ax=ax,
+                         horizontalalignment="right")
+
+ax.set_title(f"Company-Physician network: {FOCUS_SPECIALTY} (circles=companies, squares=physicians)")
+ax.axis("off")
+plt.tight_layout()
+plt.savefig(os.path.join(VIS_DIR, "network_independent_medical_examiner.png"), dpi=150)
+plt.close()
+plt.close()
+
+nodes2[["node", "kind", "degree", "weighted_degree", "degree_centrality", "community"]] \
+    .to_csv(os.path.join(OUT_DIR, "independent_medical_examiner_nodes.csv"), index=False)
