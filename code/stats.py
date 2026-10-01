@@ -162,7 +162,7 @@ save_ecdf(subset, "Covered_Recipient_Specialty_1",
 
 
 # Visualizations for specialty table from step 1, most paid companies by total amount AND by number of payments
-specialty_totals = pd.read_csv(DATA_DIR / "specialty_year.csv")
+specialty_totals = pd.read_csv(DATA_DIR / "aggregates" / "specialty_year.csv")
 
 top_by_amount = specialty_totals.sort_values("total_amount", ascending=False).head(15)
 fig, ax = plt.subplots(figsize=(9, 7))
