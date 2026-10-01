@@ -1,16 +1,27 @@
 import os
+import textwrap
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
+from pathlib import Path
 import seaborn as sns
 
-PROJECT_DIR = r"C:\Users\Maksi\PycharmProjects\DATA_MINING_CMS_PROJECT"
-DATA_DIR = PROJECT_DIR + r"\data"
-VIS_DIR = PROJECT_DIR + r"\visualizations"
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = PROJECT_DIR / "data"
+VIS_DIR = PROJECT_DIR / "visualizations"
 os.makedirs(VIS_DIR, exist_ok=True)
 
-df = pd.read_parquet(DATA_DIR + r"\general_payments_2024_clean.parquet")
+ECDF_DIR = VIS_DIR / "ecdf"
+VIOLIN_DIR = VIS_DIR / "violin"
+BARS_HIST_DIR = VIS_DIR / "bars_and_histogram"
+
+os.makedirs(ECDF_DIR, exist_ok=True)
+os.makedirs(VIOLIN_DIR, exist_ok=True)
+os.makedirs(BARS_HIST_DIR, exist_ok=True)
+
+df = pd.read_parquet(DATA_DIR / "general_payments_2024_clean.parquet")
 
 # Raw vs Log amount histogram
 fig, axes = plt.subplots(1, 2, figsize=(13, 5))
@@ -33,7 +44,7 @@ axes[1].set_ylabel("Density")
 axes[1].legend()
 
 plt.tight_layout()
-plt.savefig(VIS_DIR + r"\amount_histograms.png", dpi=150)
+plt.savefig(BARS_HIST_DIR / "amount_histograms.png", dpi=150)
 plt.close()
 
 # Examining heavy-tailed distribution with Q-Q plot
@@ -41,7 +52,7 @@ fig, ax = plt.subplots(figsize=(6, 6))
 stats.probplot(df["Log_Amount"], dist="norm", plot=ax)
 ax.set_title("Q-Q Plot: Log_Amount vs Normal")
 plt.tight_layout()
-plt.savefig(VIS_DIR + r"\log_amount_qq_plot.png", dpi=150)
+plt.savefig(BARS_HIST_DIR / "log_amount_qq_plot.png", dpi=150)
 plt.close()
 
 # Concentration of payments through Gini, Lorenz curves and topx% share
@@ -86,7 +97,7 @@ ax.set_ylabel("Cumulative share of total payments")
 ax.set_title(f"Lorenz Curve (Gini = {gini:.3f})")
 ax.legend()
 plt.tight_layout()
-plt.savefig(VIS_DIR + r"\lorenz_curve.png", dpi=150)
+plt.savefig(BARS_HIST_DIR / "lorenz_curve.png", dpi=150)
 plt.close()
 
 # Specialties and nature of payment distributions with violin plots and ECDF
@@ -98,21 +109,30 @@ sns.violinplot(data=subset, x="Covered_Recipient_Specialty_1", y="Log_Amount", a
 ax.set_title("Log Amount by Specialty (Top 10 by Payment Count)")
 ax.set_xlabel("")
 ax.set_ylabel("Log Amount")
-ax.tick_params(axis="x", rotation=45)
+labels = ax.get_xticklabels()
+ax.set_xticks(range(len(labels)))
+ax.set_xticklabels(
+    [textwrap.fill(label.get_text(), width=15) for label in labels],
+    rotation=0
+)
 plt.tight_layout()
-plt.savefig(VIS_DIR + r"\log_amount_by_specialty.png", dpi=150)
+plt.savefig(VIOLIN_DIR / "log_amount_by_specialty.png", dpi=150)
 plt.close()
 
 fig, ax = plt.subplots(figsize=(10, 6))
-sns.violinplot(data=df, x="Nature_of_Payment_or_Transfer_of_Value", y="Log_Amount", ax=ax)
-ax.set_title("Log Amount by Nature of Payment")
+sns.violinplot(data=df,x="Form_of_Payment_or_Transfer_of_Value",y="Log_Amount",ax=ax)
+ax.set_title("Log Amount by Form of Payment")
 ax.set_xlabel("")
 ax.set_ylabel("Log Amount")
-ax.tick_params(axis="x", rotation=90)
+labels = ax.get_xticklabels()
+ax.set_xticks(range(len(labels)))
+ax.set_xticklabels(
+    [textwrap.fill(label.get_text(), width=15) for label in labels],
+    rotation=0
+)
 plt.tight_layout()
-plt.savefig(VIS_DIR + r"\log_amount_by_payment_type.png", dpi=150)
+plt.savefig(VIOLIN_DIR / "log_amount_by_payment_type.png", dpi=150)
 plt.close()
-
 
 def save_ecdf(data, group_col, plot_filename, legend_filename):
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -125,24 +145,24 @@ def save_ecdf(data, group_col, plot_filename, legend_filename):
     ax.set_title(f"ECDF of Log Amount by {group_col}")
     handles, labels = ax.get_legend_handles_labels()
     plt.tight_layout()
-    plt.savefig(VIS_DIR + f"\\{plot_filename}.png", dpi=150)
+    plt.savefig(ECDF_DIR / f"{plot_filename}.png", dpi=150)
     plt.close()
 
     fig_legend = plt.figure(figsize=(4, len(labels) * 0.3))
     fig_legend.legend(handles, labels, loc="center")
     plt.axis("off")
-    plt.savefig(VIS_DIR + f"\\{legend_filename}.png", dpi=150, bbox_inches="tight")
+    plt.savefig(ECDF_DIR / f"{legend_filename}.png", dpi=150, bbox_inches="tight")
     plt.close()
 
 
-save_ecdf(df, "Nature_of_Payment_or_Transfer_of_Value",
+save_ecdf(df, "Form_of_Payment_or_Transfer_of_Value",
           "log_amount_ecdf_by_payment_type", "log_amount_ecdf_by_payment_type_legend")
 save_ecdf(subset, "Covered_Recipient_Specialty_1",
           "log_amount_ecdf_by_specialty", "log_amount_ecdf_by_specialty_legend")
 
 
 # Visualizations for specialty table from step 1, most paid companies by total amount AND by number of payments
-specialty_totals = pd.read_csv(DATA_DIR + r"\specialty_year.csv")
+specialty_totals = pd.read_csv(DATA_DIR / "specialty_year.csv")
 
 top_by_amount = specialty_totals.sort_values("total_amount", ascending=False).head(15)
 fig, ax = plt.subplots(figsize=(9, 7))
@@ -151,7 +171,7 @@ ax.invert_yaxis()
 ax.set_xlabel("Total Amount (USD)")
 ax.set_title("Top 15 Specialties by Total Payment Amount")
 plt.tight_layout()
-plt.savefig(VIS_DIR + r"\top_specialties_by_total_amount.png", dpi=150)
+plt.savefig(BARS_HIST_DIR / "top_specialties_by_total_amount.png", dpi=150)
 plt.close()
 
 top_by_count = specialty_totals.sort_values("n_payments", ascending=False).head(15)
@@ -161,6 +181,6 @@ ax.invert_yaxis()
 ax.set_xlabel("Number of Payments")
 ax.set_title("Top 15 Specialties by Payment Count")
 plt.tight_layout()
-plt.savefig(VIS_DIR + r"\top_specialties_by_payment_count.png", dpi=150)
+plt.savefig(BARS_HIST_DIR / "top_specialties_by_payment_count.png", dpi=150)
 plt.close()
 print("Saved visualizations in folder.")

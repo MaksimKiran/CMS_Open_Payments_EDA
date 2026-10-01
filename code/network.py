@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 RUN_DIAGNOSTICS = True
 
@@ -23,17 +24,19 @@ def style(node_list):
     return ([colors(community_of[n] % 20) for n in node_list],
             [30 + 800 * strength[n] / biggest for n in node_list])
 
-PROJECT_DIR = r"C:\Users\Maksi\PycharmProjects\DATA_MINING_CMS_PROJECT"
-DATA_DIR = os.path.join(PROJECT_DIR, "data")
-VIS_DIR = os.path.join(PROJECT_DIR, "visualizations")
-OUT_DIR = os.path.join(DATA_DIR, "network")
-os.makedirs(VIS_DIR, exist_ok=True)
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = PROJECT_DIR / "data"
+VIS_DIR = PROJECT_DIR / "visualizations"
+NETWORK_VIS_DIR = VIS_DIR / "network"
+OUT_DIR = DATA_DIR / "network"
+
+os.makedirs(NETWORK_VIS_DIR, exist_ok=True)
 os.makedirs(OUT_DIR, exist_ok=True)
 
 COMPANY = "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name"
 SPECIALTY = "Covered_Recipient_Specialty_1"
 
-cs = pd.read_csv(os.path.join(DATA_DIR, "company_specialty.csv"), keep_default_na=False)
+cs = pd.read_csv(os.path.join(DATA_DIR, "aggregates", "company_specialty.csv"), keep_default_na=False)
 cs = cs[cs["total_amount"] > 0].copy()  # we are interested in positive payment relationships
 
 # Amounts are extremely right-skewed, so the edge weight is log(1 + amount), not raw dollars
@@ -143,7 +146,7 @@ ax.invert_yaxis()
 ax.set_xlabel("Weighted degree (sum of log(1 + amount))")
 ax.set_title(f"Top {TOP_N} companies by weighted degree")
 plt.tight_layout()
-plt.savefig(os.path.join(VIS_DIR, "network_top_companies.png"), dpi=150)
+plt.savefig(os.path.join(NETWORK_VIS_DIR, "network_top_companies.png"), dpi=150)
 plt.close()
 
 # Top 40 companies and top 25 specialties by weighted degree
@@ -167,16 +170,16 @@ nx.draw_networkx_labels(H, pos, labels=labels, font_size=7, ax=ax)
 ax.set_title("Core network: companies (circles), specialties (squares); color = Louvain community")
 ax.axis("off")
 plt.tight_layout()
-plt.savefig(os.path.join(VIS_DIR, "network_core_graph.png"), dpi=150)
+plt.savefig(os.path.join(NETWORK_VIS_DIR, "network_core_graph.png"), dpi=150)
 plt.close()
 
-print("\nSaved tables to", OUT_DIR, "and figures to", VIS_DIR)
+print("\nSaved tables to", OUT_DIR, "and figures to", NETWORK_VIS_DIR)
 
 # Chosen from helper script, good ration between total amount and payments
 FOCUS_SPECIALTY = "Independent Medical Examiner"
 PHYSICIAN = "Covered_Recipient_Profile_ID"
 
-df = pd.read_parquet(DATA_DIR + r"\general_payments_2024_clean.parquet")
+df = pd.read_parquet(DATA_DIR / "general_payments_2024_clean.parquet")
 focus = df[df[SPECIALTY] == FOCUS_SPECIALTY]
 
 cp = (
@@ -241,7 +244,7 @@ nx.draw_networkx_labels(G2, pos2, labels=company_labels, font_size=8, ax=ax,
 ax.set_title(f"Company-Physician network: {FOCUS_SPECIALTY} (circles=companies, squares=physicians)")
 ax.axis("off")
 plt.tight_layout()
-plt.savefig(os.path.join(VIS_DIR, "network_independent_medical_examiner.png"), dpi=150)
+plt.savefig(os.path.join(NETWORK_VIS_DIR, "network_independent_medical_examiner.png"), dpi=150)
 plt.close()
 plt.close()
 
