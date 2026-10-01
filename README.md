@@ -1,5 +1,3 @@
-Backup README.md (has "we" formulations)
-
 # CMS Open Payments 2024: Company and Specialty Payment Analysis
 
 This project analyzes the CMS Open Payments **General Payments** data for **Program Year 2024**. It looks for concentration, network structure and unusual patterns in payments from companies to medical specialties and recipients.
