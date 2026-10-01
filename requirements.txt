@@ -1,5 +1,6 @@
 pandas
 numpy
+pyarrow
 matplotlib
 scipy
 seaborn
