@@ -75,6 +75,25 @@ To choose the number of clusters, we try K-means for k from 2 to 15 and check th
 
 To interpret the result, a heatmap of standardized averages is generated. The raw averages and the list of specialties in each cluster are also printed, so we can check that the clusters make sense.
 
+## Step 5: `anomaly.py`
+
+**Question: Which recipients, links and specialties look unusual compared with their own group?**
+
+We use five simple indicators instead of a complex model. Each case is compared with its own group (the same specialty), so a big payment in a small specialty is not hidden by a big specialty. The script only uses the tables from step 1 and the clean parquet, and the recipient totals per specialty are calculated in memory. Amounts that are zero or negative are skipped, because the log and the Gini need positive numbers.
+
+| # | Indicator | Rule | Why this cutoff |
+|---|---|---|---|
+| 1 | Recipient far above own specialty | z-score > 3 on log(total amount), within the specialty (min 30 recipients) | z > 3 is a standard "far from the others" rule. We use logs because dollars are very skewed. |
+| 2 | Very frequent payments from one company to one recipient | Top 0.1% of company-recipient pairs by number of payments (≥ 71 payments) | There are 4.6M pairs. The top 1% would be about 46,000 cases, which is too many to use. |
+| 3 | Unusually large company-specialty pair | z-score > 3 on log(total amount) among the pairs of the same specialty (min 20 companies) | Same idea as indicator 1, but for pairs. |
+| 4 | Concentrated specialty | Gini is calculated for each specialty, then the 10% with the highest Gini are flagged (min 30 recipients) | Inequality is high everywhere (overall Gini 0.94), so a fixed cutoff would flag almost everything. A relative cutoff shows which specialties are *more* concentrated than the rest. |
+| 5 | Company dominates a specialty | One company pays at least 50% of the specialty total (min 5 paying companies) | "More than half" is easy to explain. The minimum avoids trivial cases with only one or two payers. |
+
+Minimum group sizes are used because a z-score is not stable in tiny groups.
+
+The script prints how many cases each indicator flags and the top 10 of each. All flagged cases are saved in one file, `data/anomaly/flagged_cases.csv`, and there is one figure per indicator in `visualizations/anomaly/`.
+
+**It is important to note** that a flag only means "unusual compared with the group". It does not mean something improper happened. Some flags are small dollar amounts, and some indicators can point to the same payment (for example, indicators 4 and 5 for the same specialty).
 ## Additional questions: where each is answered
 
 1. **Which specialties receive the most payments?** \
@@ -89,10 +108,5 @@ Companies are ranked by degree, weighted degree and degree centrality in `networ
 4. **Are there groups of connected companies and specialties?** We use the Louvain communities of the bipartite graph in `network.py`. The K-means clustering of specialties in `clustering.py` gives a second, independent view to compare against.
 
 5. **Which company-specialty links look unusual?**
-So far we only have the repeated-link tables in `network.py`, which show pairs with many payments or many payments per recipient. Step 5 will add additional indicators.
+We have the repeated-link tables in `network.py`, which show pairs with many payments or many payments per recipient, as well as the indicators in `anomaly.py`.
 
-## Not yet implemented
-
-- Step 5 (anomaly and red-flag indicators);
-- Step 6 (evaluation of interpretability and stability by specialty and payment type)
-- The optional node2vec embeddings of the company-specialty network
