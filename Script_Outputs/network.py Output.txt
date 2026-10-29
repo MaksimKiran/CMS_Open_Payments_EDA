@@ -1,0 +1,191 @@
+network.py Output:
+
+Nodes: 1,961 (1,839 companies, 122 specialties)
+Edges: 26,809
+Louvain found 6 communities (modularity 0.169)
+
+Company degree: median 7, max 90, 17.9% pay only one specialty
+Specialty degree: median 84, max 1123
+
+Top 15 companies by degree:
+                                       node  degree  weighted_degree  degree_centrality  community
+            AstraZeneca Pharmaceuticals LP      90       780.862627           0.737705          0
+                   Merck Sharp & Dohme LLC      86       708.825155           0.704918          0
+                            Lilly USA, LLC      85       717.329772           0.696721          0
+                       Abbott Laboratories      84       741.187137           0.688525          0
+                          Novo Nordisk Inc      84       675.891569           0.688525          0
+                               ABBVIE INC.      79       853.616974           0.647541          0
+             Boston Scientific Corporation      78       708.658056           0.639344          0
+     Bayer Healthcare Pharmaceuticals Inc.      75       564.730839           0.614754          0
+                Exact Sciences Corporation      71       504.401082           0.581967          0
+                           Medtronic, Inc.      69       690.216311           0.565574          0
+       Takeda Pharmaceuticals U.S.A., Inc.      69       620.889906           0.565574          0
+                                   ABIOMED      68       525.777634           0.557377          0
+Boehringer Ingelheim Pharmaceuticals, Inc.      66       551.993939           0.540984          0
+                     Solventum Corporation      66       473.411831           0.540984          5
+                         Baxter Healthcare      65       519.625976           0.532787          0
+
+Top 15 companies by weighted degree:
+                                       node  degree  weighted_degree  degree_centrality  community
+                               ABBVIE INC.      79       853.616974           0.647541          0
+            AstraZeneca Pharmaceuticals LP      90       780.862627           0.737705          0
+                       Abbott Laboratories      84       741.187137           0.688525          0
+                            Lilly USA, LLC      85       717.329772           0.696721          0
+                   Merck Sharp & Dohme LLC      86       708.825155           0.704918          0
+             Boston Scientific Corporation      78       708.658056           0.639344          0
+                           Medtronic, Inc.      69       690.216311           0.565574          0
+                          Novo Nordisk Inc      84       675.891569           0.688525          0
+       Takeda Pharmaceuticals U.S.A., Inc.      69       620.889906           0.565574          0
+                       Stryker Corporation      64       619.383751           0.524590          5
+                     Gilead Sciences, Inc.      64       566.942045           0.524590          0
+     Bayer Healthcare Pharmaceuticals Inc.      75       564.730839           0.614754          0
+                  INTUITIVE SURGICAL, INC.      58       555.013126           0.475410          2
+Boehringer Ingelheim Pharmaceuticals, Inc.      66       551.993939           0.540984          0
+             Alexion Pharmaceuticals, Inc.      63       535.925995           0.516393          0
+
+Top 15 specialties by degree:
+                   node  degree  weighted_degree  degree_centrality  community
+     Internal Medicine    1123     10504.469384           0.610658          1
+   Physician Assistant     870      6831.322715           0.473083          3
+               Surgery     869      6476.368901           0.472539          2
+                Family     831      6378.988482           0.451876          0
+       Family Medicine     822      5914.774216           0.446982          0
+   Orthopaedic Surgery     780      6472.622505           0.424144          3
+    Nurse Practitioner     778      5959.200258           0.423056          0
+            Pediatrics     759      5784.184714           0.412724          1
+               Medical     694      4757.912602           0.377379          0
+             Radiology     668      4993.656777           0.363241          1
+Psychiatry & Neurology     658      5021.480209           0.357803          1
+        Anesthesiology     654      4414.630939           0.355628          3
+      General Practice     650      4803.231841           0.353453          0
+    Emergency Medicine     615      4080.412839           0.334421          1
+            Acute Care     613      4036.989314           0.333333          0
+
+Top 15 specialties by weighted degree:
+                   node  degree  weighted_degree  degree_centrality  community
+     Internal Medicine    1123     10504.469384           0.610658          1
+   Physician Assistant     870      6831.322715           0.473083          3
+               Surgery     869      6476.368901           0.472539          2
+   Orthopaedic Surgery     780      6472.622505           0.424144          3
+                Family     831      6378.988482           0.451876          0
+     Teaching Hospital     546      6092.479883           0.296900          1
+    Nurse Practitioner     778      5959.200258           0.423056          0
+       Family Medicine     822      5914.774216           0.446982          0
+            Pediatrics     759      5784.184714           0.412724          1
+Psychiatry & Neurology     658      5021.480209           0.357803          1
+             Radiology     668      4993.656777           0.363241          1
+      General Practice     650      4803.231841           0.353453          0
+               Medical     694      4757.912602           0.377379          0
+        Anesthesiology     654      4414.630939           0.355628          3
+  Neurological Surgery     569      4333.317850           0.309407          3
+
+Community summary:
+  community  n_companies  n_specialties                                                                                                                                 top_companies                                                                                                       top_specialties
+         0          344             77                                     ABBVIE INC.; AstraZeneca Pharmaceuticals LP; Abbott Laboratories; Lilly USA, LLC; Merck Sharp & Dohme LLC                                                Family; Nurse Practitioner; Family Medicine; General Practice; Medical
+         3          471             13                       Medical Device Business Servi…; Zimmer Biomet Holdings, Inc.; DePuy Synthes Sales Inc.; Nevro Corp.; Organogenesis Inc.                              Physician Assistant; Orthopaedic Surgery; Anesthesiology; Neurological Surgery; Surgical
+         5          131             10                        Stryker Corporation; Solventum Corporation; Kerecis Limited; Pacira Pharmaceuticals Incorp…; Philips North America LLC                                     Dentist; Oral & Maxillofacial Surgery; Dental Hygienist; Perioperative; Denturist
+         1          545              8 Novartis Pharmaceuticals Corp…; GE HEALTHCARE; Siemens Medical Solutions USA…; Bard Peripheral Vascular, Inc.; Tactile Systems Technology Inc                                   Internal Medicine; Teaching Hospital; Pediatrics; Psychiatry & Neurology; Radiology
+         2          206              8                                      INTUITIVE SURGICAL, INC.; Smith+Nephew, Inc.; PFIZER INC.; VERTEX PHARMACEUTICALS INCORP…; ConvaTec Inc. Surgery; Obstetrics & Gynecology; Urology; Thoracic Surgery (Cardiothoracic Vascular Surgery); Colon & Rectal Surgery
+         4          142              6                   Amgen Inc.; GENZYME CORPORATION; Integra LifeSciences Corporat…; Mallinckrodt Hospital Product…; E.R. Squibb & Sons, L.L.C.                                      Ophthalmology; Otolaryngology; Dermatology; Optometrist; Technician/Technologist
+
+Top 15 company-specialty edges by number of payments:
+ Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name Covered_Recipient_Specialty_1  total_amount  n_payments  n_recipients  payments_per_recipient
+                                                  ABBVIE INC.             Internal Medicine   29854797.08      325155         40618                8.005195
+                               AstraZeneca Pharmaceuticals LP             Internal Medicine   31672707.85      292503         42070                6.952769
+                                                  ABBVIE INC.                        Family    9851422.18      241881         33888                7.137659
+                                                   Amgen Inc.             Internal Medicine   26180015.82      226178         51929                4.355524
+                                                  ABBVIE INC.           Physician Assistant    9211649.67      190242         20822                9.136586
+                                                  PFIZER INC.             Internal Medicine   17944538.54      174231         42160                4.132614
+                         Novartis Pharmaceuticals Corporation             Internal Medicine    8114229.27      173309         32136                5.392986
+                               AstraZeneca Pharmaceuticals LP               Family Medicine    3412572.46      164175         21143                7.764981
+                                                  ABBVIE INC.               Family Medicine    5416198.06      162926         24143                6.748374
+                                                  ABBVIE INC.        Psychiatry & Neurology   19503424.48      150284         13863               10.840655
+                                               Lilly USA, LLC             Internal Medicine   21504203.57      145867         29096                5.013301
+                                             Novo Nordisk Inc             Internal Medicine   13907303.01      140022         29113                4.809604
+                               AstraZeneca Pharmaceuticals LP                        Family    3189481.57      137560         24150                5.696066
+                                          Abbott Laboratories             Internal Medicine   21616537.77      136901         26130                5.239227
+                                        GlaxoSmithKline, LLC.             Internal Medicine   15358445.55      128174         28967                4.424828
+
+Top 15 edges by payments per recipient (at least 5 recipients):
+ Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name Covered_Recipient_Specialty_1  total_amount  n_payments  n_recipients  payments_per_recipient
+                                              CSL Plasma Inc.       Obstetrics & Gynecology     995793.37        1105             8              138.125000
+                                              CSL Plasma Inc.                   Hospitalist     567316.72         422             5               84.400000
+                               Micro-tech Endoscopy USA, Inc.             Teaching Hospital      22922.32         698            10               69.800000
+                                              CSL Plasma Inc.            Emergency Medicine    1452490.75        1153            18               64.055556
+                                              CSL Plasma Inc.                     Pathology    4746517.42        2911            50               58.220000
+                                              CSL Plasma Inc.                       Surgery     657926.00         423             8               52.875000
+                                              CSL Plasma Inc.              General Practice    1706231.80        1070            22               48.636364
+                                              CSL Plasma Inc.             Internal Medicine    1378069.63        1250            32               39.062500
+                                              CSL Plasma Inc.               Family Medicine    4412009.74        3158            83               38.048193
+                                              CSL Plasma Inc.                    Pediatrics     453371.01         368            11               33.454545
+                                          BIOTRONIK NRO, Inc.              General Practice      13681.74         346            11               31.454545
+                                             DENTSPLY IH Inc.                       Dentist     376477.05        1069            34               31.441176
+                                              CSL Plasma Inc.                Anesthesiology     183045.75         184             6               30.666667
+                                              KLS-Martin L.P.             Teaching Hospital    4040872.61        2839           105               27.038095
+                                                Kedplasma LLC                     Pathology     678421.44         316            12               26.333333
+
+Saved tables to C:\Users\Maksi\PycharmProjects\DATA_MINING_CMS_PROJECT\data\network and figures to C:\Users\Maksi\PycharmProjects\DATA_MINING_CMS_PROJECT\visualizations\network
+Number of nodes: 60, 24 companies and 36 physicians.
+Number of edges: 50
+Independent Medical Examiner: Louvain found 12 communities
+                                       node      kind  degree  weighted_degree  degree_centrality  community
+                                ABBVIE INC.   company      20        87.408777           0.555556          7
+                                    5632112 physician       8        36.951567           0.333333          6
+              Boston Scientific Corporation   company       4        19.665503           0.111111          9
+                                     343181 physician       4        19.167020           0.166667          9
+                                    6730660 physician       3        13.079127           0.125000          6
+                                    1792354 physician       1        12.093329           0.041667          1
+                            CSL Plasma Inc.   company       1        12.093329           0.027778          1
+                                     975956 physician       2        10.618066           0.083333          2
+                             Penumbra, Inc.   company       2        10.252003           0.055556          6
+               Janssen Pharmaceuticals, Inc   company       2         8.939340           0.055556          3
+             AstraZeneca Pharmaceuticals LP   company       2         7.655969           0.055556          6
+                                Nevro Corp.   company       2         7.552841           0.055556          9
+                                    5694437 physician       2         7.363790           0.083333          7
+                   INTUITIVE SURGICAL, INC.   company       1         7.063861           0.027778          2
+                                   11446249 physician       1         7.007392           0.041667          7
+                                     848226 physician       1         6.298416           0.041667          7
+ZOLL Services LLC (A/K/A ZOLL LifeCor Corp)   company       1         5.731949           0.027778          6
+                                    9444979 physician       1         5.630172           0.041667          7
+                                      42328 physician       1         5.622681           0.041667          9
+                       Forte Bio-Pharma LLC   company       1         5.314879           0.027778          9
+                            HEARTFLOW, INC.   company       1         5.291343           0.027778          6
+                                    7223191 physician       1         5.221544           0.041667          7
+                                    3356884 physician       1         5.058536           0.041667          7
+                                   11530971 physician       1         5.012034           0.041667          3
+                                    8807290 physician       1         4.974179           0.041667          9
+                                    7222648 physician       1         4.786491           0.041667          7
+                       Imperative Care, Inc   company       1         4.735760           0.027778          6
+                                    7533734 physician       1         4.606969           0.041667          7
+                        Abbott Laboratories   company       1         4.603268           0.027778          6
+                           EMD Serono, Inc.   company       1         4.561636           0.027778         10
+                                    1100771 physician       1         4.561636           0.041667         10
+                                   11442333 physician       1         4.500809           0.041667          7
+                                   11322724 physician       1         4.342636           0.041667          7
+                                    1239445 physician       1         4.056816           0.041667          5
+       Regeneron Healthcare Solutions, Inc.   company       1         4.056816           0.027778          5
+                                   11681333 physician       1         4.053870           0.041667          7
+                                     167010 physician       1         4.003690           0.041667          7
+                                   11683624 physician       1         3.927306           0.041667          3
+                                   11452080 physician       1         3.850148           0.041667          7
+                                   11327587 physician       1         3.844386           0.041667          7
+                                    9314006 physician       1         3.813086           0.041667          7
+             Collegium Pharmaceutical, Inc.   company       1         3.775516           0.027778          9
+                           Chiesi USA, Inc.   company       1         3.621136           0.027778          6
+           Integra LifeSciences Corporation   company       1         3.554205           0.027778          2
+                                     379349 physician       1         3.503453           0.041667          0
+                                    ABIOMED   company       1         3.503453           0.027778          0
+                           Novo Nordisk Inc   company       1         3.377588           0.027778          7
+                                     229868 physician       1         3.339677           0.041667          9
+                                     561194 physician       1         3.253470           0.041667         11
+                    Merck Sharp & Dohme LLC   company       1         3.253470           0.027778         11
+                                     871150 physician       1         3.205182           0.041667          9
+                                    9461690 physician       1         3.202340           0.041667          7
+ Boehringer Ingelheim Pharmaceuticals, Inc.   company       1         3.192942           0.027778          6
+                          Baxter Healthcare   company       1         3.156575           0.027778          8
+                                     524882 physician       1         3.156575           0.041667          8
+                            Medtronic, Inc.   company       1         3.061988           0.027778          4
+                                   11321611 physician       1         3.061988           0.041667          4
+                                    3734157 physician       1         2.796061           0.041667          7
+                                     318777 physician       1         2.786245           0.041667          7
+                                     245437 physician       1         2.673459           0.041667          6

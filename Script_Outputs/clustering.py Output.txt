@@ -1,0 +1,64 @@
+clustering.py Output:
+
+Choosing number of clusters:
+k=2, silhouette score=0.348, smallest cluster size=58
+k=3, silhouette score=0.351, smallest cluster size=1
+k=4, silhouette score=0.376, smallest cluster size=1
+k=5, silhouette score=0.352, smallest cluster size=1
+k=6, silhouette score=0.403, smallest cluster size=1
+k=7, silhouette score=0.388, smallest cluster size=1
+k=8, silhouette score=0.401, smallest cluster size=1
+k=9, silhouette score=0.411, smallest cluster size=1
+k=10, silhouette score=0.418, smallest cluster size=1
+k=11, silhouette score=0.419, smallest cluster size=1
+k=12, silhouette score=0.370, smallest cluster size=1
+k=13, silhouette score=0.388, smallest cluster size=1
+k=14, silhouette score=0.392, smallest cluster size=1
+k=15, silhouette score=0.282, smallest cluster size=1
+
+Using k=5
+Number of specialties per cluster:
+cluster
+0    32
+1    51
+2     1
+3     3
+4    35
+Name: count, dtype: int64
+
+Cluster profile (standardized feature averages):
+         n_payments  log_total_amount  log_mean_amount  n_companies  share_In-kind items and services  share_Cash or cash equivalent  share_Dividend, profit or other return on investment  share_Stock, stock option, or any other ownership interest  share_Stock option  share_Stock
+cluster                                                                                                                                                                                                                                                                                
+0             -0.30             -0.34             0.27        -0.53                             -0.88                           0.91                                                 -0.16                                                       -0.20               -0.20        -0.18
+1             -0.30             -0.71            -0.68        -0.65                              1.01                          -1.01                                                 -0.16                                                       -0.20               -0.20        -0.18
+2              8.73              1.85             0.54         3.34                             -0.81                           0.78                                                  0.30                                                        0.41                1.05         7.37
+3             -0.09              0.99             1.24         0.52                             -0.92                           0.54                                                  5.05                                                        4.33               -0.20        -0.18
+4              0.46              1.21             0.63         1.29                             -0.57                           0.57                                                 -0.05                                                        0.10                0.46         0.22
+
+Cluster profile (raw values, not standardized):
+          n_payments  log_total_amount  log_mean_amount  n_companies  share_In-kind items and services  share_Cash or cash equivalent  share_Dividend, profit or other return on investment  share_Stock, stock option, or any other ownership interest  share_Stock option  share_Stock
+cluster                                                                                                                                                                                                                                                                                 
+0          2180.8438            9.9282           4.7439      77.6562                            0.2208                         0.7792                                                0.0000                                                      0.0000              0.0000       0.0000
+1          1690.6863            8.1855           3.6434      44.1373                            0.8466                         0.1534                                                0.0000                                                      0.0000              0.0000       0.0000
+2          3883434.0           20.2232           5.0573    1123.0000                            0.2438                         0.7374                                                0.0080                                                      0.0059              0.0021       0.0028
+3         91467.6667           16.1641           5.8742     359.0000                            0.2078                         0.6598                                                0.0889                                                      0.0435              0.0000       0.0000
+4        329106.1714           17.2378           5.1672     567.8000                            0.3252                         0.6687                                                0.0019                                                      0.0029              0.0011       0.0001
+
+Specialties per cluster:
+
+Cluster 0 (32 specialties):
+['Administrator', 'Advanced Practice Dental Therapist', 'Cardiac Rehabilitation', 'Chiropractor', 'Clinical Nurse Specialist', 'Clinical Pharmacology', 'Colon & Rectal Surgery', 'Community Health', 'Dental Assistant', 'Dental Hygienist', 'Dental Laboratory Technician', 'Dental Therapist', 'Denturist', 'Electrodiagnostic Medicine', 'Enterostomal Therapy', 'Independent Medical Examiner', 'Lactation Consultant', 'Licensed Practical Nurse', 'Licensed Vocational Nurse', 'Neonatal', 'Nephrology', 'Neuromusculoskeletal Medicine & OMM', 'Neuromusculoskeletal Medicine, Sports Medicine', 'Nuclear Medicine', 'Oncology', 'Oral & Maxillofacial Surgery', 'Pain Management', 'Perioperative', 'Preventive Medicine', 'Psychiatric/Mental Health, Adult', 'Transplant Surgery', 'Wound Care']
+
+Cluster 1 (51 specialties):
+['Addiction (Substance Use Disorder)', 'Advanced Practice Midwife', 'Ambulatory Care', 'Anesthesiologist Assistant', 'Assistant, Podiatric', 'Case Management', 'Chronic Care', 'College Health', 'Community Health/Public Health', 'Continuing Education/Staff Development', 'Critical Care Medicine', 'Diabetes Educator', 'Emergency', 'Family Health', 'Flight', 'Gastroenterology', 'Hemodialysis', 'Home Health', 'Hospice', 'Infection Control', 'Infusion Therapy', 'Integrative Medicine', 'Legal Medicine', 'Long-Term Care', 'Maternal Newborn', 'Medical-Surgical', 'Neonatal Intensive Care', 'Neonatal, Critical Care', 'Neuroscience', 'Obstetric, High-Risk', 'Obstetric, Inpatient', 'Occupational Health', 'Oncology, Pediatrics', 'Orthopedic', 'Otorhinolaryngology & Head-Neck', 'Pediatrics, Critical Care', 'Perinatal', 'Phlebology', 'Psychiatric/Mental Health, Child & Adolescent', 'Psychiatric/Mental Health, Child & Family', 'Psychiatric/Mental Health, Community', 'Psychiatric/Mental Health, Geropsychiatric', 'Registered Nurse', 'Registered Nurse First Assistant', 'Rehabilitation', 'Reproductive Endocrinology/Infertility', 'School', 'Technician/Technologist', 'Transplantation', "Women's Health", "Women's Health Care, Ambulatory"]
+
+Cluster 2 (1 specialties):
+['Internal Medicine']
+
+Cluster 3 (3 specialties):
+['Hospitalist', 'Medical Genetics', 'Ophthalmology']
+
+Cluster 4 (35 specialties):
+['Acute Care', 'Adult Health', 'Allergy & Immunology', 'Anesthesiology', 'Dentist', 'Dermatology', 'Emergency Medicine', 'Family', 'Family Medicine', 'General Practice', 'Gerontology', 'Medical', 'Neurological Surgery', 'Nurse Anesthetist, Certified Registered', 'Nurse Practitioner', 'Obstetrics & Gynecology', 'Optometrist', 'Orthopaedic Surgery', 'Otolaryngology', 'Pain Medicine', 'Pathology', 'Pediatrics', 'Physical Medicine & Rehabilitation', 'Physician Assistant', 'Plastic Surgery', 'Podiatrist', 'Primary Care', 'Psychiatric/Mental Health', 'Psychiatry & Neurology', 'Radiology', 'Surgery', 'Surgical', 'Teaching Hospital', 'Thoracic Surgery (Cardiothoracic Vascular Surgery)', 'Urology']
+
+Saved specialty_clusters.csv and cluster_profile_heatmap.png

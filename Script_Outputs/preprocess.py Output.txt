@@ -1,0 +1,61 @@
+preprocess.py Output:
+
+Loaded 15,498,687 rows from cache
+Covered_Recipient_Type
+Covered Recipient Physician                     9965643
+Covered Recipient Non-Physician Practitioner    5495656
+Covered Recipient Teaching Hospital               37388
+Name: count, dtype: int64
+Covered_Recipient_Type
+Covered Recipient Physician                     64.299918
+Covered Recipient Non-Physician Practitioner    35.458849
+Covered Recipient Teaching Hospital              0.241233
+Name: proportion, dtype: float64
+NaNs:
+ Covered_Recipient_Type                                                  0
+Teaching_Hospital_ID                                             15461299
+Covered_Recipient_Profile_ID                                        37388
+Recipient_State                                                       468
+Covered_Recipient_Specialty_1                                       37388
+Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name           0
+Total_Amount_of_Payment_USDollars                                       0
+Date_of_Payment                                                         0
+Number_of_Payments_Included_in_Total_Amount                             0
+Form_of_Payment_or_Transfer_of_Value                                    0
+Nature_of_Payment_or_Transfer_of_Value                                  0
+Record_ID                                                               0
+Related_Product_Indicator                                               0
+Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1          1369209
+dtype: int64
+Here! Recipient ID's nan check.
+0
+Covered_Recipient_Specialty_1                     1        2        3
+Covered_Recipient_Type                                               
+Covered Recipient Non-Physician Practitioner      0  2628807  2866849
+Covered Recipient Physician                       0  5316920  4648723
+Covered Recipient Teaching Hospital           37388        0        0
+Dropped 0 duplicate rows
+Potential company-name variants: 61
+['ABBVIE INC.', 'AbbVie Inc.']
+['AIMMUNE THERAPEUTICS, INC.', 'Aimmune Therapeutics, Inc.']
+['ATRICURE, INC.', 'AtriCure, Inc.']
+['Aveo Pharmaceuticals, Inc.', 'AVEO Pharmaceuticals, Inc.']
+['Avita Medical Americas, Llc', 'Avita Medical Americas, LLC']
+['Bayer Healthcare Pharmaceuticals Inc.', 'Bayer HealthCare Pharmaceuticals Inc.']
+['BESINS HEALTHCARE IRELAND LIMITED', 'Besins Healthcare Ireland Limited']
+['BIOCOMPOSITES INC', 'Biocomposites Inc']
+['Bracco Diagnostics Inc.', 'BRACCO DIAGNOSTICS INC.']
+['CALLIDITAS THERAPEUTICS US INC.', 'Calliditas Therapeutics US Inc.']
+['CATALYST PHARMACEUTICALS, INC.', 'Catalyst Pharmaceuticals, Inc.']
+['CIPLA USA INC.', 'Cipla USA Inc.']
+['COLGATE ORAL PHARMACEUTICALS, INC.', 'Colgate Oral Pharmaceuticals, Inc.']
+['COLOPLAST CORP', 'Coloplast Corp']
+['CVRx, Inc.', 'CVRx. Inc.', 'CVRx Inc.']
+['Eisai Inc.', 'EISAI INC.']
+['ERBE USA INC', 'ERBE USA Inc']
+['Forthright Medical-AZ, LLC', 'Forthright Medical - AZ, LLC']
+['FUJIFILM Healthcare Americas Corporation', 'Fujifilm Healthcare Americas Corporation']
+['FUJIFILM Sonosite, Inc.', 'FUJIFILM SonoSite, Inc.']
+company_specialty: 26,809 rows
+company_physician: 4,616,279 rows
+specialty_year: 122 rows

@@ -1,0 +1,7 @@
+stats.py Output:
+
+Gini coefficient (recipient totals): 0.9421
+Top 1% of recipients receive 72.6% of total payments
+Top 5% of recipients receive 88.3% of total payments
+Top 10% of recipients receive 92.2% of total payments
+Saved visualizations in folder.
